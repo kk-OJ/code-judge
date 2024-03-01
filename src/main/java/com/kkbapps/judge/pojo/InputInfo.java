@@ -16,5 +16,5 @@ public class InputInfo {
     private String id;
 
     // 仅执行代码获取执行结果
-    private String[] inputs;
+    private String[] inputs = {""};
 }

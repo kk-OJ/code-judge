@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class JudgeConstraint {
 
     // 要执行的代码
-    @VerifyParam(required = true)
+    @VerifyParam(required = true, max = 8192)
     private String code;
 
     // 代码语言
@@ -31,5 +31,5 @@ public class JudgeConstraint {
     private Long memoryLimit = 100L * 1024 * 1024;
 
     // 输入数据
-    private InputInfo inputInfo;
+    private InputInfo inputInfo = new InputInfo();
 }
