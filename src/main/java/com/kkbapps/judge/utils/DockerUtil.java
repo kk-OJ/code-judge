@@ -5,6 +5,7 @@ import com.github.dockerjava.api.command.*;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.github.dockerjava.netty.NettyDockerCmdExecFactory;
 import com.kkbapps.judge.constant.Constants;
 import com.kkbapps.judge.constant.enums.ExecuteTypeEnum;
 import com.kkbapps.judge.constant.enums.JudgeTypeEnum;
@@ -14,6 +15,7 @@ import com.kkbapps.judge.pojo.dto.JudgeConstraint;
 import com.kkbapps.judge.pojo.vo.ExecuteInfo;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -23,7 +25,9 @@ public class DockerUtil {
 
     public static Result executeCodeWithDocker(JudgeConstraint judgeConstraint, Integer index, String folderPath, String fileName) {
         // 创建 DockerClient 用于后续操作
-        DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+        DockerClient dockerClient = DockerClientBuilder.getInstance()
+                .withDockerCmdExecFactory(new NettyDockerCmdExecFactory())
+                .build();
         String containerId = null;
         try {
             // 拉取镜像
@@ -161,26 +165,24 @@ public class DockerUtil {
             // 执行命令
             ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
                     .withCmd(Constants.langRunCmd[index])
-                    .withAttachStderr(true)
-                    .withAttachStdin(true)
-                    .withAttachStdout(true)
-                    .withTty(true)
+                    .withAttachStdin(true)          // 附加到stdin
+                    .withAttachStderr(true)         // 获取stdout
+                    .withAttachStdout(true)         // 获取stderr
                     .exec();
-            // 获取输出
-            ExecStartResultCallback execStartResultCallback = new ExecStartResultCallback() {
-                @Override
-                public void onNext(Frame frame) {
-                    System.out.println("运行结果：" + new String(frame.getPayload()));
-                    super.onNext(frame);
-                }
-
-            };
+            // 输出流获取结果，错误流获取错误信息
+            ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+            ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+            ExecStartResultCallback resultCallback = new ExecStartResultCallback(stdout, stderr);
             File in = new File(folderPath + File.separator + i + ".in");
-            try {
+            try(InputStream inputStream = new FileInputStream(in)) {
                 // 执行命令
                 dockerClient.execStartCmd(execCreateCmdResponse.getId())
-                        .exec(execStartResultCallback)
+                        .withStdIn(inputStream)
+                        .exec(resultCallback)
                         .awaitCompletion();
+                System.out.println(stdout.toString("UTF-8"));
+                System.out.println("--------------------------------");
+                System.out.println(stderr.toString("UTF-8"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
