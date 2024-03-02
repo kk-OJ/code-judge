@@ -18,7 +18,7 @@ public class Constants {
     public static final String[] IMAGES = {"openjdk:8-alpine"};
 
     // 镜像拉取标记
-    public static final Boolean[] INIT = {false};
+    public static final Boolean[] INIT = {true};
 
     // 编程语言-数组索引
     public static final HashMap<String,Integer> languageIndexMap = new HashMap<>();
@@ -35,7 +35,7 @@ public class Constants {
     public static final String[] langCompileCmd = {"javac -encoding utf-8 %s"};
 
     // 编程语言对应执行的启动命令
-    public static final String[][] langRunCmd = {{"java", "-cp", containerVolumePath, "Main"}};
+    public static final String[][] langRunCmd = {{"java", "-cp", containerVolumePath, "Main", "< /data/0.in"}};
 
     // 评测代码根文件夹
     public static final String codeSourcePath = System.getProperty("user.dir") + File.separator + "source";

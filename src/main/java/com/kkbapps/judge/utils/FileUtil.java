@@ -1,8 +1,5 @@
 package com.kkbapps.judge.utils;
 
-import com.kkbapps.judge.exception.BusinessException;
-import com.kkbapps.judge.pojo.Result;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,6 +31,13 @@ public class FileUtil {
      * 删除文件/文件夹
      */
     public static void delete(File folder) {
+
+    }
+
+    /**
+     * 复制文件
+     */
+    public static void copyFiles() {
 
     }
 }

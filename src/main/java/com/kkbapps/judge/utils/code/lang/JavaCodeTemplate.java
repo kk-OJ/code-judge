@@ -1,6 +1,7 @@
 package com.kkbapps.judge.utils.code.lang;
 
 import com.kkbapps.judge.constant.Constants;
+import com.kkbapps.judge.constant.enums.JudgeTypeEnum;
 import com.kkbapps.judge.pojo.Result;
 import com.kkbapps.judge.pojo.dto.JudgeConstraint;
 import com.kkbapps.judge.utils.DockerUtil;
@@ -22,12 +23,23 @@ public class JavaCodeTemplate implements CodeTemplate {
         try {
             String folderPath = Constants.codeSourcePath + File.separator + UUID.randomUUID().toString();
             // 将代码保存
-            fileFolder = FileUtil.saveFile(folderPath,sourceFileName,judgeConstraint.getCode());
+            fileFolder = FileUtil.saveFile(folderPath, sourceFileName, judgeConstraint.getCode());
+            // 将测试用例保存
+            // 仅执行代码
+            if(JudgeTypeEnum.EXECUTE_CODE_ONLY.getState().equals(judgeConstraint.getType())) {
+                for(int i=0;i<judgeConstraint.getInputs().length;i++) {
+                    FileUtil.saveFile(folderPath, i + ".in", judgeConstraint.getInputs()[i]);
+                }
+            }
+            // 普通判题
+            else if(JudgeTypeEnum.NORMAL_JUDGE.getState().equals(judgeConstraint.getType())) {
+                // FileUtil.copyFiles();
+            }
             // 使用Docker进行编译、执行代码并返回输出结果
             result = DockerUtil.executeCodeWithDocker(judgeConstraint, index, folderPath, sourceFileName);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException();
+            throw e;
         } finally {
             // 删除相关文件
             FileUtil.delete(fileFolder);

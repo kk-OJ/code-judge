@@ -2,7 +2,6 @@ package com.kkbapps.judge.pojo.dto;
 
 import com.kkbapps.judge.annotation.VerifyParam;
 import com.kkbapps.judge.constant.enums.JudgeTypeEnum;
-import com.kkbapps.judge.pojo.InputInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +29,9 @@ public class JudgeConstraint {
     // 限制内存 TODO
     private Long memoryLimit = 100L * 1024 * 1024;
 
-    // 输入数据
-    private InputInfo inputInfo = new InputInfo();
+    // 需要判题，传入题目id
+    private String id;
+
+    // 仅执行代码的输入数据
+    private String[] inputs = {""};
 }
