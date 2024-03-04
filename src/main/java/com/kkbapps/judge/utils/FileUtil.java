@@ -31,13 +31,14 @@ public class FileUtil {
      * 删除文件/文件夹
      */
     public static void delete(File folder) {
-
-    }
-
-    /**
-     * 复制文件
-     */
-    public static void copyFiles() {
-
+        if (folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    delete(file);
+                }
+            }
+        }
+        folder.delete();
     }
 }

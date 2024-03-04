@@ -35,7 +35,7 @@ public class Constants {
     public static final String[] langCompileCmd = {"javac -encoding utf-8 %s"};
 
     // 编程语言对应执行的启动命令
-    public static final String[][] langRunCmd = {{"java", "-cp", containerVolumePath, "Main", "< /data/0.in"}};
+    public static final String[][] langRunCmd = {{"java", "-cp", containerVolumePath, "Main"}};
 
     // 评测代码根文件夹
     public static final String codeSourcePath = System.getProperty("user.dir") + File.separator + "source";
