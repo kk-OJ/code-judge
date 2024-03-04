@@ -25,5 +25,5 @@ public class CppContext extends LangContext {
     private final String compileCmd = "g++ -o Main %s -finput-charset=UTF-8";
 
     // 编程语言对应执行的启动命令
-    private final String[] runCmd = {Constants.containerVolumePath + File.separator + "Main"};
+    private final String[] runCmd = {"./Main"};
 }

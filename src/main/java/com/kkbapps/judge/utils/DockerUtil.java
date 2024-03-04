@@ -93,7 +93,6 @@ public class DockerUtil {
         CreateContainerResponse createContainerResponse = containerCmd
                 .withHostConfig(hostConfig)
                 .withNetworkDisabled(true)
-                .withReadonlyRootfs(true)
                 .withAttachStdin(true)
                 .withAttachStderr(true)
                 .withAttachStdout(true)
@@ -104,14 +103,6 @@ public class DockerUtil {
         dockerClient.startContainerCmd(containerId).exec();
         return containerId;
     }
-
-    /**
-     * 创建执行命令
-     */
-
-    /**
-     * 获取输入输出
-     */
 
 
     /**
