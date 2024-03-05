@@ -68,7 +68,7 @@ public class GlobalAspect {
 
             // 基本类型
             if(ArrayUtils.contains(TYPE_BASE, parameter.getParameterizedType().getTypeName())){
-                checkBaseParam(verifyParam, value);
+                checkBaseParam(verifyParam, value,parameter.getParameterizedType().getTypeName());
             }
             // 对象
             else{
@@ -78,7 +78,7 @@ public class GlobalAspect {
     }
 
     // 校验基本类型参数
-    private void checkBaseParam(VerifyParam verifyParam, Object value){
+    private void checkBaseParam(VerifyParam verifyParam, Object value, String type){
         boolean isEmpty = value == null || StringUtil.isEmpty(value.toString());
         int length = value == null ? 0 : value.toString().length();
 
@@ -88,8 +88,16 @@ public class GlobalAspect {
         }
 
         // 校验长度
-        if(!isEmpty && !(length >= verifyParam.min() && length <= verifyParam.max())){
+        if(!isEmpty && !(length >= verifyParam.minLen() && length <= verifyParam.maxLen())){
             throw new BusinessException(Result.error(400,"参数长度错误！"));
+        }
+
+        // 校验值
+        if(!TYPE_BASE[0].equals(type)) {
+            long val = (Long) value;
+            if(!isEmpty && !(val >= verifyParam.minVal() && val <= verifyParam.maxVal())){
+                throw new BusinessException(Result.error(400,"参数值错误！"));
+            }
         }
 
         // 校验正则
@@ -128,9 +136,10 @@ public class GlobalAspect {
 
                 // 基本类型
                 if(ArrayUtils.contains(TYPE_BASE, fieldType.getName())){
-                    checkBaseParam(verifyParam, value);
+                    checkBaseParam(verifyParam, value, fieldType.getName());
                 }
-                // 对象，不再嵌套校验
+                // 对象
+                else checkObjParam(value);
 
                 // 打印字段名、类型和值
                 // System.out.println("Field: " + field.getName() + ", Type: " + fieldType.getName() + ", Value: " + value);

@@ -14,12 +14,22 @@ public @interface VerifyParam {
     /**
      * 最小长度
      */
-    int min() default -1;
+    int minLen() default -1;
 
     /**
      * 最大长度
      */
-    int max() default Integer.MAX_VALUE;
+    int maxLen() default Integer.MAX_VALUE;
+
+    /**
+     * 最小值
+     */
+    long minVal() default -1;
+
+    /**
+     * 最大值
+     */
+    long maxVal () default  Long.MAX_VALUE;
 
     /**
      * 是否必需
