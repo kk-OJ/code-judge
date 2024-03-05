@@ -2,7 +2,7 @@ package com.kkbapps.judge.constant.enums;
 
 public enum ExecuteTypeEnum {
 
-    ACCEPT(0,"执行成功"),
+    EXECUTE_SUCCESS(0,"执行成功"),
     COMPILE_ERROR(1,"编译出错");
 
     private final Integer state;

@@ -28,10 +28,6 @@ public class JudgeService {
                     FileUtil.saveFile(folderPath, i + ".in", judgeConstraint.getInputs()[i]);
                 }
             }
-            // 普通判题
-            else if(JudgeTypeEnum.NORMAL_JUDGE.getState().equals(judgeConstraint.getType())) {
-
-            }
             // 使用Docker进行编译、执行代码并返回输出结果
             result = DockerUtil.executeCodeWithDocker(judgeConstraint, langContext, folderPath);
         } catch (Exception e) {

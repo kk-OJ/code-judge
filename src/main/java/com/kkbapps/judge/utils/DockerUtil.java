@@ -1,6 +1,7 @@
 package com.kkbapps.judge.utils;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.*;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -15,15 +16,14 @@ import com.kkbapps.judge.pojo.dto.JudgeConstraint;
 import com.kkbapps.judge.pojo.lang.LangContext;
 import com.kkbapps.judge.pojo.vo.ExecuteInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import javax.print.Doc;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DockerUtil {
@@ -84,12 +84,12 @@ public class DockerUtil {
         hostConfig.withMemory(memoryLimit);                                                                         // 限制内存
         hostConfig.withMemorySwap(0L);
         hostConfig.withCpuCount(1L);
-        hostConfig.setBinds(new Bind(folderPath, new Volume(Constants.containerVolumePath)));                         // 挂载数据卷
+        hostConfig.setBinds(new Bind(folderPath, new Volume(Constants.containerVolumePath)));                       // 挂载数据卷
         // 创建容器
         CreateContainerCmd containerCmd = dockerClient.createContainerCmd(image);
         CreateContainerResponse createContainerResponse = containerCmd
                 .withHostConfig(hostConfig)
-                .withNetworkDisabled(true)
+                .withNetworkDisabled(true)                                                                  // 禁止网络连接
                 .withAttachStdin(true)
                 .withAttachStderr(true)
                 .withAttachStdout(true)
@@ -163,6 +163,8 @@ public class DockerUtil {
         int num = judgeConstraint.getInputs().length;
         List<String> outList = new ArrayList<>();
         List<String> errList = new ArrayList<>();
+        long totalTime = 0L;
+        long totalMemory = 0L;
         for(int i=0;i<num;i++) {
             // 执行命令
             ExecCreateCmdResponse execCreateCmdResponse = createCmdResponse(dockerClient,containerId,runCmd);
@@ -170,26 +172,48 @@ public class DockerUtil {
             ByteArrayOutputStream stdout = new ByteArrayOutputStream();
             ByteArrayOutputStream stderr = new ByteArrayOutputStream();
             ExecStartResultCallback resultCallback = new ExecStartResultCallback(stdout, stderr);
+            // 获取占用的内存
+            final Long[] memory = {0L};
+            StatsCmd statsCmd = dockerClient.statsCmd(containerId);
+            ResultCallback<Statistics> statisticsResultCallback = statsCmd.exec(new ResultCallback<Statistics>() {
+                @Override
+                public void onNext(Statistics statistics) {memory[0] = Math.max(memory[0],statistics.getMemoryStats().getUsage());}
+                @Override
+                public void close() throws IOException {}
+                @Override
+                public void onStart(Closeable closeable) {}
+                @Override
+                public void onError(Throwable throwable) {}
+                @Override
+                public void onComplete() {}
+            });
+            statsCmd.exec(statisticsResultCallback);
             File in = new File(folderPath + File.separator + i + ".in");
             try(InputStream inputStream = new FileInputStream(in)) {
+                long startTime = System.nanoTime();
                 // 执行命令
                 dockerClient.execStartCmd(execCreateCmdResponse.getId())
                         .withStdIn(inputStream)
                         .exec(resultCallback)
-                        .awaitCompletion();
+                        .awaitCompletion(judgeConstraint.getTimeLimit() + 1000, TimeUnit.MILLISECONDS);         // 限制执行时间
+                long endTime = System.nanoTime();
+                totalTime += (endTime - startTime) / 1_000_000;
+                totalMemory += memory[0];
                 outList.add(stdout.toString("UTF-8"));
                 errList.add(stderr.toString("UTF-8"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
+
         ExecuteInfo executeInfo = new ExecuteInfo();
-        executeInfo.setExecuteType(ExecuteTypeEnum.ACCEPT.getDesc());
+        executeInfo.setExecuteType(ExecuteTypeEnum.EXECUTE_SUCCESS.getDesc());
         executeInfo.setExecuteDetail("代码执行成功");
         executeInfo.setStdin(Arrays.asList(judgeConstraint.getInputs()));
         executeInfo.setStdout(outList);
         executeInfo.setStderr(errList);
-        // executeInfo.setMemory();
+        executeInfo.setTime(totalTime);
+        executeInfo.setMemory(totalMemory);
         return Result.success(200,"执行成功",executeInfo);
     }
 
