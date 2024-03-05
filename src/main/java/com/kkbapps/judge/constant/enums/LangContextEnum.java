@@ -1,15 +1,13 @@
 package com.kkbapps.judge.constant.enums;
 
-import com.kkbapps.judge.pojo.lang.CppContext;
-import com.kkbapps.judge.pojo.lang.JavaContext;
-import com.kkbapps.judge.pojo.lang.LangContext;
-import com.kkbapps.judge.pojo.lang.PythonContext;
+import com.kkbapps.judge.pojo.lang.*;
 
 public enum LangContextEnum {
 
     Java("java",new JavaContext()),
     Cpp("c++",new CppContext()),
-    Python("python",new PythonContext());
+    Python("python",new PythonContext()),
+    Js("javascript",new JsContext());
 
     private String lang;
     private LangContext langContext;

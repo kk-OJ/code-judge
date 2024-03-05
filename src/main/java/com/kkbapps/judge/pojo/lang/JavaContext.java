@@ -17,9 +17,6 @@ public class JavaContext extends LangContext {
     // 编程语言对应的docker镜像
     private final String image = "openjdk:8-alpine";
 
-    // 镜像拉取标记
-    private Boolean init = true;
-
     // 编程语言对应执行的编译命令
     private final String compileCmd = "javac -encoding utf-8 %s";
 

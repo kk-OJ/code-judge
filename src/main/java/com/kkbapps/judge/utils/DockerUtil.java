@@ -36,10 +36,7 @@ public class DockerUtil {
         String containerId = null;
         try {
             // 拉取镜像
-            if(!langContext.getInit()) {
-                pullImages(dockerClient, langContext.getImage());
-                langContext.setInit(true);
-            }
+            // pullImages(dockerClient, langContext.getImage());
             // 创建并启动容器
             containerId = createAndStartContainer(dockerClient, langContext.getImage(), judgeConstraint.getMemoryLimit(), folderPath);
             // 编译代码

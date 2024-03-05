@@ -17,9 +17,6 @@ public class LangContext {
     // 编程语言对应的docker镜像
     private String image;
 
-    // 镜像拉取标记
-    private Boolean init;
-
     // 编程语言对应执行的编译命令
     private String compileCmd;
 

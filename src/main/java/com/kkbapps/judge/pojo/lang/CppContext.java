@@ -18,9 +18,6 @@ public class CppContext extends LangContext {
     // 编程语言对应的docker镜像
     private final String image = "gcc";
 
-    // 镜像拉取标记
-    private Boolean init = true;
-
     // 编程语言对应执行的编译命令
     private final String compileCmd = "g++ -o main %s -finput-charset=UTF-8";
 
