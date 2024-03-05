@@ -29,6 +29,8 @@ public class JudgeController {
             throw new BusinessException(
                     Result.error(400,"暂不支持" + judgeConstraint.getLang() + "语言"));
         }
+        // 校验题目是否存在
+        // if()
         return judgeService.exeCode(judgeConstraint,langContextEnum.getLangContext());
     }
 

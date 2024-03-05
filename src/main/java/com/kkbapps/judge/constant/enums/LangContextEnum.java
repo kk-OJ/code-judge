@@ -8,7 +8,8 @@ public enum LangContextEnum {
     Cpp("c++",new CppContext()),
     Python("python",new PythonContext()),
     Js("javascript",new JsContext()),
-    Go("golang",new GoContext());
+    Go("golang",new GoContext()),
+    C("c",new CContext());
 
     private String lang;
     private LangContext langContext;
