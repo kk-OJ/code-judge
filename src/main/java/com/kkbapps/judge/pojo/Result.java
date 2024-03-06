@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * 统一返回结果类
  */
@@ -23,7 +25,7 @@ public class Result {
     private String info;
 
     // 返回数据
-    private ExecuteInfo data;
+    private Object data;
 
     public static Result error(Integer code, String info)
     {
@@ -51,6 +53,15 @@ public class Result {
         result.setCode(code);
         result.setInfo(info);
         result.setData(executeInfo);
+        return result;
+    }
+
+    public static Result success(Integer code, String info, Map<String,Object> map) {
+        Result result = new Result();
+        result.setStatus("success");
+        result.setCode(code);
+        result.setInfo(info);
+        result.setData(map);
         return result;
     }
 

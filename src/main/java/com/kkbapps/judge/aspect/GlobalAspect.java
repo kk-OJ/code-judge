@@ -4,6 +4,7 @@ import com.kkbapps.judge.annotation.GlobalInterceptor;
 import com.kkbapps.judge.annotation.VerifyParam;
 import com.kkbapps.judge.exception.BusinessException;
 import com.kkbapps.judge.pojo.Result;
+import com.kkbapps.judge.utils.AuthorizationUtil;
 import com.kkbapps.judge.utils.ReUtil;
 import com.kkbapps.judge.utils.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
@@ -13,7 +14,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -52,10 +56,13 @@ public class GlobalAspect {
 
         if(null == globalInterceptor) return null;
         // 参数校验
-        verifyParams(method, args);
+        if(globalInterceptor.checkParams()) verifyParams(method, args);
+        // 权限校验
+        if(globalInterceptor.checkAuth()) verifyAuth();
         return point.proceed();
     }
 
+    // 校验参数
     private void verifyParams(Method method, Object[] args){
         Parameter[] parameters = method.getParameters();
         for(int i=0;i<parameters.length;i++)
@@ -151,4 +158,15 @@ public class GlobalAspect {
         }
     }
 
+    // 校验权限
+    private void verifyAuth() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String Authorization = request.getHeader("Authorization");
+        if(Authorization == null) throw new BusinessException(Result.error(400,"token为空！"));
+        String[] keys = Authorization.split(" ");
+        if(keys.length != 3 || !"Bearer".equals(keys[0])) throw new BusinessException(Result.error(400,"token格式错误！"));
+        String checkInfo = AuthorizationUtil.checkKey(keys[1],keys[2]);
+        if(!AuthorizationUtil.AccessKeyValidInfo.equals(checkInfo))
+            throw new BusinessException(Result.error(400,checkInfo));
+    }
 }

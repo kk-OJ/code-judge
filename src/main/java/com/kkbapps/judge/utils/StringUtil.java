@@ -44,23 +44,4 @@ public class StringUtil {
         }
         return false;
     }
-
-    /**
-     * 判断参数1是否为参数2的前缀
-     */
-    public static boolean isPrefix(String a, String b) {
-        if(a == null) return true;
-        if(b == null) return false;
-
-        int len_a = a.length();
-        int len_b = b.length();
-
-        if(len_a > len_b) return false;
-
-        for(int i=len_a-1;i>=0;i--) if(a.charAt(i) != b.charAt(i)) return false;
-
-        return true;
-    }
-
-
 }

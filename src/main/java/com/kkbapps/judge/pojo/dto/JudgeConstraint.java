@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class JudgeConstraint {
 
     // 要执行的代码
-    @VerifyParam(required = true, maxLen = 8192)
+    @VerifyParam(required = true, maxLen = 64 * 1024)
     private String code;
 
     // 代码语言
