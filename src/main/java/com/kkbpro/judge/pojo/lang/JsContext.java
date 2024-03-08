@@ -16,7 +16,7 @@ public class JsContext extends LangContext {
     private final String sourceFileName = "main.js";
 
     // 编程语言对应的docker镜像
-    private final String image = "node";
+    private final String image = "node:alpine";
 
     // 编程语言对应执行的编译命令
     private final String compileCmd = null;

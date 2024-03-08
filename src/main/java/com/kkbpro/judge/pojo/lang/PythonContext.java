@@ -17,7 +17,7 @@ public class PythonContext extends LangContext {
     private final String sourceFileName = "main.py";
 
     // 编程语言对应的docker镜像
-    private final String image = "python";
+    private final String image = "python:alpine";
 
     // 编程语言对应执行的编译命令
     private final String compileCmd = null;

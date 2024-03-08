@@ -13,7 +13,7 @@ public class GoContext extends LangContext {
     private final String sourceFileName = "main.go";
 
     // 编程语言对应的docker镜像
-    private final String image = "golang";
+    private final String image = "golang:alpine";
 
     // 编程语言对应执行的编译命令
     private final String compileCmd = "go build -o main %s";
