@@ -13,4 +13,7 @@ public class Constants {
     // 评测代码根文件夹
     public static final String codeSourcePath = System.getProperty("user.dir") + File.separator + "source";
 
+    // 编译时间限制 (ms)
+    public static final Long compileTimeLimit = 5000L;
+
 }

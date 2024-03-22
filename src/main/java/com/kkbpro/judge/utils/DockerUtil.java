@@ -146,7 +146,7 @@ public class DockerUtil {
             // 执行命令
             dockerClient.execStartCmd(execCreateCmdResponse.getId())
                     .exec(execStartResultCallback)
-                    .awaitCompletion();
+                    .awaitCompletion(Constants.compileTimeLimit, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
