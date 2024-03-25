@@ -10,13 +10,13 @@
 >
 > 预览：http://code.kkbpro.com/
 >
-> 更新时间：2024-03-11
+> 更新时间：2024-03-25
 
 ### 🛸 预览
 
 访问以下网址：http://code.kkbpro.com/
 
-![code-judge](https://img.kkbapps.com/judge/code-judge-1.1.png)
+![code-judge](https://img.kkbapps.com/judge/code-judge-1.3.png)
 
 ### 💪 部署
 
