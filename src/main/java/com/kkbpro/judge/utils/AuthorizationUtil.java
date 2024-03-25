@@ -29,7 +29,6 @@ public class AuthorizationUtil {
     public static String checkKey(String AccessKey, String SecretKey) {
         if(AccessKey == null || AccessKey.isEmpty()) return "AccessKey为空！";
         if(SecretKey == null || SecretKey.isEmpty()) return "SecretKey为空！";
-        System.out.println(AesUtil.aesDecrypt(SecretKey));
         if(!AccessKey.equals(AesUtil.aesDecrypt(SecretKey))) return "SecretKey不正确！";
         String[] splits = AccessKey.split("-");
         if(splits.length < 3) return "AccessKey格式错误！";
