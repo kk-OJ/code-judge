@@ -6,7 +6,7 @@
 >
 > 作者：[zyyzyykk](https://github.com/zyyzyykk/)
 >
-> 源代码：https://github.com/zyyzyykk/code-judge
+> 源代码：https://github.com/kk-OJ/code-judge
 >
 > 预览：http://code.kkbpro.com/
 >
