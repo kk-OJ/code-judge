@@ -21,6 +21,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -152,51 +153,63 @@ public class DockerUtil {
         }
     }
 
+    /**
+     * 执行代码程序
+     */
+    private static Long[] executeCode(DockerClient dockerClient, String[] runCmd, String containerId, Long timeLimit, File in, OutputStream stdout, OutputStream stderr)
+    {
+        // 执行命令
+        ExecCreateCmdResponse execCreateCmdResponse = createCmdResponse(dockerClient,containerId,runCmd);
+        ExecStartResultCallback resultCallback = new ExecStartResultCallback(stdout, stderr);
+        // 获取占用的内存
+        final Long[] memory = {0L};
+        StatsCmd statsCmd = dockerClient.statsCmd(containerId);
+        statsCmd.exec(new ResultCallback<Statistics>() {
+            @Override
+            public void onNext(Statistics statistics) {memory[0] = Math.max(memory[0],statistics.getMemoryStats().getUsage());}
+            @Override
+            public void close() throws IOException {}
+            @Override
+            public void onStart(Closeable closeable) {}
+            @Override
+            public void onError(Throwable throwable) {}
+            @Override
+            public void onComplete() {}
+        });
+
+        try(InputStream inputStream = new FileInputStream(in)) {
+            long startTime = System.nanoTime();
+            // 执行命令
+            dockerClient.execStartCmd(execCreateCmdResponse.getId())
+                    .withStdIn(inputStream)
+                    .exec(resultCallback)
+                    .awaitCompletion(timeLimit + Constants.tleTimeLimit, TimeUnit.MILLISECONDS);         // 限制执行时间
+            long endTime = System.nanoTime();
+            return new Long[] {(endTime - startTime) / 1_000_000, memory[0]};
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * 仅执行代码
      */
     private static Result executeCodeOnly(DockerClient dockerClient, String[] runCmd, String containerId, JudgeConstraint judgeConstraint, String folderPath) {
         // 获取执行次数
-        int num = judgeConstraint.getInputs().length;
+        int num = Math.min(judgeConstraint.getInputs().length, Constants.maxInputsLength);
         List<String> outList = new ArrayList<>();
         List<String> errList = new ArrayList<>();
         long totalTime = 0L;
         long totalMemory = 0L;
         for(int i=0;i<num;i++) {
-            // 执行命令
-            ExecCreateCmdResponse execCreateCmdResponse = createCmdResponse(dockerClient,containerId,runCmd);
-            // 输出流获取结果，错误流获取错误信息
+            File in = new File(folderPath + File.separator + i + ".in");
             ByteArrayOutputStream stdout = new ByteArrayOutputStream();
             ByteArrayOutputStream stderr = new ByteArrayOutputStream();
-            ExecStartResultCallback resultCallback = new ExecStartResultCallback(stdout, stderr);
-            // 获取占用的内存
-            final Long[] memory = {0L};
-            StatsCmd statsCmd = dockerClient.statsCmd(containerId);
-            ResultCallback<Statistics> statisticsResultCallback = statsCmd.exec(new ResultCallback<Statistics>() {
-                @Override
-                public void onNext(Statistics statistics) {memory[0] = Math.max(memory[0],statistics.getMemoryStats().getUsage());}
-                @Override
-                public void close() throws IOException {}
-                @Override
-                public void onStart(Closeable closeable) {}
-                @Override
-                public void onError(Throwable throwable) {}
-                @Override
-                public void onComplete() {}
-            });
-            statsCmd.exec(statisticsResultCallback);
-            File in = new File(folderPath + File.separator + i + ".in");
-            try(InputStream inputStream = new FileInputStream(in)) {
-                long startTime = System.nanoTime();
-                // 执行命令
-                dockerClient.execStartCmd(execCreateCmdResponse.getId())
-                        .withStdIn(inputStream)
-                        .exec(resultCallback)
-                        .awaitCompletion(judgeConstraint.getTimeLimit() + 1000, TimeUnit.MILLISECONDS);         // 限制执行时间
-                long endTime = System.nanoTime();
-                totalTime += (endTime - startTime) / 1_000_000;
-                totalMemory += memory[0];
+            Long[] execResult = executeCode(dockerClient, runCmd, containerId, judgeConstraint.getTimeLimit(), in, stdout, stderr);
+            totalTime += execResult[0];
+            totalMemory += execResult[1];
+            try {
                 outList.add(stdout.toString("UTF-8"));
                 errList.add(stderr.toString("UTF-8"));
             } catch (Exception e) {

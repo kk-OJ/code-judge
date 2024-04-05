@@ -24,11 +24,11 @@ public class JudgeConstraint {
     private Integer type = JudgeTypeEnum.EXECUTE_CODE_ONLY.getState();
 
     // 限制时间
-    @VerifyParam(maxVal = 5000L)
+    @VerifyParam(minVal = 200L, maxVal = 5000L)
     private Long timeLimit = 1000L;
 
     // 限制内存
-    @VerifyParam(maxVal = 512L * 1024 * 1024)
+    @VerifyParam(minVal = 32L * 1024 * 1024, maxVal = 512L * 1024 * 1024)
     private Long memoryLimit = 256L * 1024 * 1024;
 
     // 需要判题，传入题目id

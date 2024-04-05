@@ -55,9 +55,9 @@
   | ----------- | --------------- | ------ | ------ | ----------------------------------- |
   | code        | 代码内容        | String | 必传   | 最大值为 64KB                       |
   | lang        | 代码语言        | String | 必传   | java/c++/c/python/javascript/golang |
-  | input       | 输入数据        | Array  | [""]   | /                                   |
-  | timeLimit   | 限制时间 (毫秒) | Long   | 1000ms | 最大值为 5000ms                     |
-  | memoryLimit | 限制内存 (字节) | Long   | 256MB  | 最大值为 512MB                      |
+  | input       | 输入数据        | Array  | [""]   | 最多执行10组输入数据                |
+  | timeLimit   | 限制时间 (毫秒) | Long   | 1000ms | 最小值为 200ms，最大值为 5000ms     |
+  | memoryLimit | 限制内存 (字节) | Long   | 256MB  | 最小值为 32MB，最大值为 512MB       |
 
 - 请求结果示例：
 

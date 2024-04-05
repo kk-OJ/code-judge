@@ -8,7 +8,7 @@
         <version>2.7.15</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.kkbapps</groupId>
+    <groupId>com.kkbpro</groupId>
     <artifactId>judge</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>judge</name>

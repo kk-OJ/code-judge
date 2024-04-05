@@ -16,4 +16,12 @@ public class Constants {
     // 编译时间限制 (ms)
     public static final Long compileTimeLimit = 5000L;
 
+    // 超时后继续执行时间限制
+
+    public static final Long tleTimeLimit = 200L;
+
+    // 最多执行次数
+    public static final int maxInputsLength = 10;
+
+
 }
