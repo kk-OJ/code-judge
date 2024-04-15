@@ -23,5 +23,11 @@ public class Constants {
     // 最多执行次数
     public static final int maxInputsLength = 10;
 
+    // 最大返回长度
+
+    public static final int maxStdoutLength = 1024;
+
+    public static final int maxStderrLength = 1024;
+
 
 }

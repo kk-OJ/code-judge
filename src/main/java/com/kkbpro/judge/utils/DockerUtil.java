@@ -21,7 +21,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -54,7 +53,7 @@ public class DockerUtil {
             // 释放资源（容器）
             deleteContainer(dockerClient,containerId);
         }
-        return Result.error(100,"ll");
+        return Result.error(100,"kk");
     }
 
     /**
@@ -80,7 +79,7 @@ public class DockerUtil {
     private static String createAndStartContainer(DockerClient dockerClient, String image, Long memoryLimit, String folderPath) {
         // 配置设置
         HostConfig hostConfig = new HostConfig();
-        hostConfig.withMemory(memoryLimit);                                                                         // 限制内存
+        hostConfig.withMemory(memoryLimit);                     // 限制内存
         hostConfig.withMemorySwap(0L);
         hostConfig.withCpuCount(1L);
         hostConfig.setBinds(new Bind(folderPath, new Volume(Constants.containerVolumePath)));                       // 挂载数据卷
@@ -88,7 +87,7 @@ public class DockerUtil {
         CreateContainerCmd containerCmd = dockerClient.createContainerCmd(image);
         CreateContainerResponse createContainerResponse = containerCmd
                 .withHostConfig(hostConfig)
-                .withNetworkDisabled(true)                                                                  // 禁止网络连接
+                .withNetworkDisabled(true)                                                          // 禁止网络连接
                 .withAttachStdin(true)
                 .withAttachStderr(true)
                 .withAttachStdout(true)
@@ -210,8 +209,10 @@ public class DockerUtil {
             totalTime += execResult[0];
             totalMemory += execResult[1];
             try {
-                outList.add(stdout.toString("UTF-8"));
-                errList.add(stderr.toString("UTF-8"));
+                String stdoutStr = stdout.toString("UTF-8");
+                String stderrStr = stderr.toString("UTF-8");
+                outList.add(stdoutStr.substring(0, Math.min(stdoutStr.length(), Constants.maxStdoutLength)));
+                errList.add(stderrStr.substring(0, Math.min(stderrStr.length(), Constants.maxStderrLength)));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
