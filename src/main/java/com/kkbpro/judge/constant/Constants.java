@@ -17,13 +17,14 @@ public class Constants {
     public static final Long compileTimeLimit = 5000L;
 
     // 超时后继续执行时间限制
-
     public static final Long tleTimeLimit = 200L;
 
     // 最多执行次数
     public static final int maxInputsLength = 10;
 
     // 最大返回长度
+
+    public static final int maxCompileErrorLength = 1024;
 
     public static final int maxStdoutLength = 1024;
 

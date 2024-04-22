@@ -35,7 +35,7 @@ public class JudgeService {
             throw e;
         } finally {
             // 删除相关文件
-            FileUtil.delete(fileFolder);
+            if(fileFolder != null) FileUtil.delete(fileFolder);
         }
         return result;
     }

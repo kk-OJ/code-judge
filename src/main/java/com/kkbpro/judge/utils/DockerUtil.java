@@ -52,6 +52,12 @@ public class DockerUtil {
         } finally {
             // 释放资源（容器）
             deleteContainer(dockerClient,containerId);
+            // 释放 DockerClient
+            try {
+                dockerClient.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
         }
         return Result.error(100,"kk");
     }
@@ -136,7 +142,8 @@ public class DockerUtil {
                 if (StreamType.STDERR.equals(streamType)) {
                     ExecuteInfo executeInfo = new ExecuteInfo();
                     executeInfo.setExecuteType(ExecuteTypeEnum.COMPILE_ERROR.getDesc());
-                    executeInfo.setExecuteDetail(new String(frame.getPayload()));
+                    String compileErrorDetail = new String(frame.getPayload());
+                    executeInfo.setExecuteDetail(compileErrorDetail.substring(0, Math.min(compileErrorDetail.length(), Constants.maxCompileErrorLength)));
                     throw new BusinessException(Result.success(200,"编译失败",executeInfo));
                 }
                 super.onNext(frame);
