@@ -16,7 +16,7 @@
 
 访问以下网址：http://code.kkbpro.com/
 
-![code-judge](https://img.kkbapps.com/judge/code-judge-1.3.png)
+![code-judge](http://img.kkbapps.com/judge/code-judge-1.3.png)
 
 ### 💪 部署
 
